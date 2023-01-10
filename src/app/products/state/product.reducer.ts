@@ -6,6 +6,6 @@ export const productReducer = createReducer(
         return {
             ...state,
             showProductCode:!state.showProductCode
-        }
+        };
     })
 );
