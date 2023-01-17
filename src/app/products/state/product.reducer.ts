@@ -1,51 +1,78 @@
-import { createAction, createFeatureSelector, createReducer, createSelector, on } from "@ngrx/store";
+import {
+  createFeatureSelector,
+  createReducer,
+  createSelector,
+  on,
+} from '@ngrx/store';
 import * as AppState from '../../state/app.state';
 
-import { Product } from "../product";
+import { Product } from '../product';
+import * as ProductActions from './product.actions';
 
 export interface State extends AppState.State {
-    products: ProductState;
+  products: ProductState;
 }
-export interface ProductState{
-    showProductCode:boolean;
-    currentProductId:number;
-    products:Product[];
+export interface ProductState {
+  showProductCode: boolean;
+  currentProduct: Product;
+  products: Product[];
 }
 
-const initialState:ProductState = {
-    showProductCode:true,
-    currentProductId:null,
-    products:[]
-}
+const initialState: ProductState = {
+  showProductCode: true,
+  currentProduct: null,
+  products: [],
+};
 
 const getProductFeatureState = createFeatureSelector<ProductState>('products');
 
 export const getShowProductCode = createSelector(
-    getProductFeatureState,
-    state => state.showProductCode
-)
+  getProductFeatureState,
+  (state) => state.showProductCode
+);
 
-export const getCurrentProductId = createSelector(
-    getProductFeatureState,
-    state => state.currentProductId
-)
+export const getcurrentProduct = createSelector(
+  getProductFeatureState,
+  (state) => state.currentProduct
+);
 export const getCurrentProduct = createSelector(
-    getProductFeatureState,
-    getCurrentProductId,
-    (state,currentProductId) => state.products.find(p=>p.id===currentProductId)
-)
+  getProductFeatureState,
+  getcurrentProduct,
+  (state, currentProduct) =>
+    state.products.find((p) => p.id === currentProduct.id)
+);
 
 export const getProducts = createSelector(
-    getProductFeatureState,
-    state => state.products
-)
+  getProductFeatureState,
+  (state) => state.products
+);
 
 export const productReducer = createReducer<ProductState>(
-    initialState, on(createAction('toggleShowProductCode'), (state):ProductState=>{
-        console.log('original state: '+JSON.stringify(state));
-        return {
-            ...state,
-            showProductCode:!state.showProductCode
-        };
-    })
+  initialState,
+  on(ProductActions.toggleMaskUserAction, (state): ProductState => {
+    return {
+      ...state,
+      showProductCode: !state.showProductCode,
+    };
+  }),
+  on(ProductActions.setCurrentProduct, (state, action):ProductState => {
+    return {
+      ...state,
+      currentProduct: action.product,
+    };
+  }),
+  on(ProductActions.clearCurrentProduct, (state): ProductState=> {
+    return {...state,
+        currentProduct:null
+    }
+  }),
+  on(ProductActions.initializeCurrentProduct,(state) : ProductState=>{
+    return {...state,currentProduct: {
+        id:0,
+        productName:'',
+        productCode:'New',
+        description: '',
+        starRating:0
+    }}
+  })
 );
