@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { createAction, Store } from '@ngrx/store';
 
 import { AuthService } from './auth.service';
+import { State } from './state/user.reducer';
 
 @Component({
   templateUrl: './login.component.html',
@@ -13,10 +15,12 @@ export class LoginComponent implements OnInit {
 
   maskUserName: boolean;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private store:Store<State> ) { }
 
   ngOnInit(): void {
-
+    this.store.select('users').subscribe(userState => {
+      this.maskUserName=userState.maskUserName;
+    })
   }
 
   cancel(): void {
@@ -24,7 +28,7 @@ export class LoginComponent implements OnInit {
   }
 
   checkChanged(): void {
-    this.maskUserName = !this.maskUserName;
+    this.store.dispatch({type: 'toggleMaskUser'});
   }
 
   login(loginForm: NgForm): void {
