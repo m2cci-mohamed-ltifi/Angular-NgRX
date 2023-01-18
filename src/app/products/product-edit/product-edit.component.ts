@@ -11,6 +11,7 @@ import { Store } from '@ngrx/store';
 import { getcurrentProduct, ProductState } from '../state/product.reducer';
 
 import * as ProductActions from '../state/product.actions';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'pm-product-edit',
@@ -63,7 +64,7 @@ export class ProductEditComponent implements OnInit, OnDestroy {
 
     // Watch for changes to the currently selected product
     //TODO: Unsubscribe
-    this.product$ = this.store.select(getcurrentProduct);
+    this.product$ = this.store.select(getcurrentProduct).pipe(tap(currentProduct => this.displayProduct(currentProduct)));
 
     // Watch for value changes for validation
     this.productForm.valueChanges.subscribe(
